@@ -14,8 +14,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/efficientgo/tools/core/pkg/runutil"
-	"github.com/pkg/errors"
+	"github.com/efficientgo/core/errors"
+	"github.com/efficientgo/core/runutil"
 )
 
 func ExampleRepeat() {

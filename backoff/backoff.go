@@ -1,9 +1,9 @@
 // Copyright (c) The EfficientGo Authors.
 // Licensed under the Apache License 2.0.
 
-package backoff
+// Initially copied from Cortex project.
 
-// Copied from https://github.com/cortexproject/cortex/blob/0ec7b9664a01d538f1f49580b4c359a5c3cc755a/pkg/util/backoff.go
+package backoff
 
 import (
 	"context"

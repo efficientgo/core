@@ -12,7 +12,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/pkg/errors"
+	"github.com/efficientgo/core/errors"
 )
 
 type testCloser struct {

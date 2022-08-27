@@ -1,3 +1,6 @@
+// Copyright (c) The EfficientGo Authors.
+// Licensed under the Apache License 2.0.
+
 // Initially copied from Thanos and contributed by https://github.com/bisakhmondal.
 //
 // Copyright (c) The Thanos Authors.

@@ -1,7 +1,5 @@
 include .bingo/Variables.mk
 
-MODULES ?= $(shell find $(PWD) -name "go.mod" | grep -v ".bingo" | xargs dirname)
-
 GO111MODULE       ?= on
 export GO111MODULE
 
@@ -40,21 +38,13 @@ help: ## Displays help.
 all: format build
 
 .PHONY: build
-build: ## Build all modules
-	@echo ">> building all modules: $(MODULES)"
-	for dir in $(MODULES) ; do \
-  		echo ">> building in $${dir}"; \
-		cd $${dir} && go test -run=nope ./...; \
-	done
-	@echo ">> building copyright"
-	@cd copyright && go build -o $(GOBIN)/copyright .
+build: ## Build modules
+	go test -run=nope ./...
 
 .PHONY: deps
 deps: ## Cleans up deps for all modules
-	@echo ">> running deps tidy for all modules: $(MODULES)"
-	for dir in $(MODULES) ; do \
-		cd $${dir} && go mod tidy; \
-	done
+	@echo ">> running deps tidy"
+	go mod tidy
 
 .PHONY: docs
 docs: $(MDOX) ## Generates config snippets and doc formatting.
@@ -64,15 +54,13 @@ docs: $(MDOX) ## Generates config snippets and doc formatting.
 .PHONY: format
 format: ## Formats Go code.
 format: $(GOIMPORTS)
-	@echo ">> formatting  all modules Go code: $(MODULES)"
-	@$(GOIMPORTS) -w $(MODULES)
+	@echo ">> formatting module"
+	@$(GOIMPORTS) -w .
 
 .PHONY: test
 test: ## Runs all Go unit tests.
-	@echo ">> running tests for all modules: $(MODULES)"
-	for dir in $(MODULES) ; do \
-		cd $${dir} && go test -v -race ./...; \
-	done
+	@echo ">> running tests with -race"
+	go test -v -race ./...
 
 .PHONY: check-git
 check-git:
@@ -88,23 +76,16 @@ endif
 #      --mem-profile-path string   Path to memory profile output file
 # to debug big allocations during linting.
 lint: ## Runs various static analysis against our code.
-lint: $(FAILLINT) $(GOLANGCI_LINT) $(MISSPELL) build format docs check-git deps
+lint: $(FAILLINT) $(GOLANGCI_LINT) $(MISSPELL) $(COPYRIGHT) build format docs check-git deps
 	$(call require_clean_work_tree,"detected not clean master before running lint - run make lint and commit changes.")
-	@echo ">> verifying imported "
-	for dir in $(MODULES) ; do \
-		cd $${dir} && $(FAILLINT) -paths "fmt.{Print,PrintfPrintln,Sprint}" -ignore-tests ./... && \
-		$(FAILLINT) -paths "github.com/stretchr/testify=github.com/efficientgo/tools/core/pkg/testutil" ./...; \
-	done
+	@echo ">> verifying imported packages"
+	$(FAILLINT) -paths "fmt.{Print,PrintfPrintln,Sprint}" -ignore-tests ./...
 	@echo ">> examining all of the Go files"
-	for dir in $(MODULES) ; do \
-		cd $${dir} && go vet -stdmethods=false ./...; \
-	done
+	go vet -stdmethods=false ./...
 	@echo ">> linting all of the Go files GOGC=${GOGC}"
-	for dir in $(MODULES) ; do \
-		cd $${dir} && $(GOLANGCI_LINT) run; \
-	done
+	$(GOLANGCI_LINT) run
 	@echo ">> detecting misspells"
 	@find . -type f | grep -v vendor/ | grep -vE '\./\..*' | xargs $(MISSPELL) -error
 	@echo ">> ensuring Copyright headers"
-	@$(GOBIN)/copyright $(shell go list -f "{{.Dir}}" ./... | xargs -i find "{}" -name "*.go")
+	@ $(COPYRIGHT) $(shell go list -f "{{.Dir}}" ./... | xargs -i find "{}" -name "*.go")
 	$(call require_clean_work_tree,"detected files without copyright - run make lint and commit changes.")

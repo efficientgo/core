@@ -1,3 +1,6 @@
+// Copyright (c) The EfficientGo Authors.
+// Licensed under the Apache License 2.0.
+
 // Initially copied from Thanos and contributed by https://github.com/bisakhmondal.
 //
 // Copyright (c) The Thanos Authors.
@@ -16,9 +19,9 @@ func caller() stacktrace {
 
 func TestStacktraceOutput(t *testing.T) {
 	st := caller()
-	expectedPhrase := "/pkg/errors/stacktrace_test.go:16"
+	expectedPhrase := "/errors/stacktrace_test.go:21"
 	if !strings.Contains(st.String(), expectedPhrase) {
-		t.Fatalf("expected %v phrase into the stacktrace, received stacktrace: \n%v", expectedPhrase, st.String())
+		t.Fatalf("expectedUnwrap %v phrase into the stacktrace, received stacktrace: \n%v", expectedPhrase, st.String())
 	}
 }
 

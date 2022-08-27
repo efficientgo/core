@@ -1,14 +1,11 @@
+// Copyright (c) The EfficientGo Authors.
+// Licensed under the Apache License 2.0.
+
 // Initially copied from Thanos and contributed by https://github.com/bisakhmondal.
 //
 // Copyright (c) The Thanos Authors.
 // Licensed under the Apache License 2.0.
 
-// Package errors provides basic utilities to manipulate errors with a useful stacktrace. It combines the
-// benefits of errors.New and fmt.Errorf world into a single package.
-//
-// The idea of writing errors package in thanos is highly motivated from the Tast project of Chromium OS Authors. However, instead of
-// copying the package, we end up writing our own simplified logic borrowing some ideas from the errors and github.com/pkg/errors.
-// A big thanks to all of them.
 package errors
 
 import (
@@ -51,9 +48,19 @@ func (b *base) Format(s fmt.State, verb rune) {
 	s.Write([]byte(b.Error()))
 }
 
-// Newf formats according to a format specifier and returns a new error with a stacktrace
-// with recent call frames. Each call to New returns a distinct error value even if the text is
-// identical. An alternative of the errors.New function.
+// New returns a new error with a stacktrace of recent call frames. Each call to New
+// returns a distinct error value even if the text is identical. An alternative of
+// the errors.New function from github.com/pkg/errors.
+func New(message string) error {
+	return &base{
+		info:  message,
+		stack: newStackTrace(),
+		err:   nil,
+	}
+}
+
+// Newf is like New, but it formats input according to a format specifier.
+// An alternative of the fmt.Errorf function.
 //
 // If no args have been passed, it is same as `New` function without formatting. Character like
 // '%' still has to be escaped in that scenario.
@@ -65,12 +72,31 @@ func Newf(format string, args ...interface{}) error {
 	}
 }
 
-// Wrapf returns a new error by formatting the error message with the supplied format specifier
-// and wrapping another error with a stacktrace containing recent call frames.
+// Wrap returns a new error, which wraps another error with a stacktrace containing recent call frames.
 //
-// If cause is nil, this is the same as fmt.Errorf. If no args have been passed, it is same as `Wrap`
-// function without formatting. Character like '%' still has to be escaped in that scenario.
+// If cause is nil, it does not produce the error, similar to errors.Wrap from github.com/pkg/errors was doing.
+// Still, avoid `errors.Wrap(nil, "...") patterns as it can lead to inefficiencies while constructing arguments
+// to format as well readability issues. We keep this behaviour to make sure it's a drop-in replacement.
+func Wrap(cause error, message string) error {
+	if cause == nil {
+		return nil
+	}
+
+	return &base{
+		info:  message,
+		stack: newStackTrace(),
+		err:   cause,
+	}
+}
+
+// Wrapf is like Wrap but the message is formatted with the supplied format specifier.
+//
+// If no args have been passed, it is same as `Wrap` function without formatting.
+// Character like '%' still has to be escaped in that scenario.
 func Wrapf(cause error, format string, args ...interface{}) error {
+	if cause == nil {
+		return nil
+	}
 	return &base{
 		info:  fmt.Sprintf(format, args...),
 		stack: newStackTrace(),

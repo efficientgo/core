@@ -3,7 +3,8 @@
 
 package merrors
 
-// Safe multi error implementation that chains errors on the same level. Supports errors.As and errors.Is functions.
+// Safe multi error implementation that chains errors on the same level.
+// Supports errors.As and errors.Is functions.
 //
 // Example 1:
 //

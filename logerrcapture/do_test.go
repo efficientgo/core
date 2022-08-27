@@ -14,8 +14,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/efficientgo/tools/core/pkg/testutil"
-	"github.com/pkg/errors"
+	"github.com/efficientgo/core/errors"
+	"github.com/efficientgo/core/testutil"
 )
 
 type loggerCapturer struct {
