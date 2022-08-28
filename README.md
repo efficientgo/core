@@ -70,19 +70,19 @@ func DoAndClose(f *os.File, logger logerrcapture.Logger) error {
 * [github.com/efficientgo/core/runutil](https://pkg.go.dev/github.com/efficientgo/core/runutil) offers `Retry` and `Repeat` functions which is often need in Go production code (e.g. repeating operation periodically) as well as tests (e.g. waiting on eventual results instead of sleeping).
 
 ```go
-	// Repeat every 1 second until context is done (e.g. cancel or timeout) or
-	// function returns error.
-	err := runutil.Repeat(1*time.Second, ctx.Done(), func() error {
-		// ...
-		return err // Ups, error - don't repeat anymore!
-	})
+// Repeat every 1 second until context is done (e.g. cancel or timeout) or
+// function returns error.
+err := runutil.Repeat(1*time.Second, ctx.Done(), func() error {
+	// ...
+	return err // Ups, error - don't repeat anymore!
+})
 
-	// Retry every 1 second until context is done (e.g. cancel or timeout) or
-	// function returns nil.
-	err := runutil.Retry(1*time.Second, ctx.Done(), func() error {
-		// ...
-		return nil // Done, no need to retry!
-	}) 
+// Retry every 1 second until context is done (e.g. cancel or timeout) or
+// function returns nil.
+err := runutil.Retry(1*time.Second, ctx.Done(), func() error {
+	// ...
+	return nil // Done, no need to retry!
+}) 
 ```
 
 * [github.com/efficientgo/core/backoff](https://pkg.go.dev/github.com/efficientgo/core/backoff) offers backoff timers which increases wait time on every retry, incredibly useful in distributed system timeout functionalities.
@@ -92,11 +92,11 @@ func DoAndClose(f *os.File, logger logerrcapture.Logger) error {
 * [github.com/efficientgo/core/testutil](https://pkg.go.dev/github.com/efficientgo/core/testutil) is a minimal testing utility with only few functions like `Assert`, `Ok`, `NotOk` for errors and `Equals`. It's an alternative to [testify](https://github.com/stretchr/testify) project which has a bit more bloated interface and larger dependencies.
 
 ```go
-	func TestSomething(t *testing.T) {
-		got, err := something()
-		testutil.Ok(t, err)
-		testutil.Equals(t, expected, got, "expected different thing from something")
-	}
+func TestSomething(t *testing.T) {
+	got, err := something()
+	testutil.Ok(t, err)
+	testutil.Equals(t, expected, got, "expected different thing from something")
+}
 ```
 
 ## Initial Authors
