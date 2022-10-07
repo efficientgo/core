@@ -38,11 +38,13 @@ func (e *NilOrMultiError) Add(errs ...error) {
 }
 
 // Err returns the error list as an Error (also implements error) or nil if it is empty.
-func (e NilOrMultiError) Err() Error {
-	if len(e.errs) == 0 {
+func (e *NilOrMultiError) Err() Error {
+	if e == nil || len(e.errs) == 0 {
 		return nil
 	}
-	return multiError(e)
+
+	return multiError(*e)
+}
 }
 
 // Error is extended error interface that allows to use returned read-only multi error in more advanced ways.
