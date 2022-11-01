@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestContains(t *testing.T) {
@@ -97,26 +98,29 @@ func TestEqualsWithNaN(t *testing.T) {
 			a:    math.NaN(),
 			b:    math.NaN(),
 			name: "Simple NaN value comparison",
+			opts: cmp.Options{cmpopts.EquateNaNs()},
 		},
 		{
 			a:    child{Val: math.NaN()},
 			b:    child{Val: math.NaN()},
 			name: "NaN value as struct member comparison",
+			opts: cmp.Options{cmpopts.EquateNaNs()},
 		},
 		{
 			a:    parent{C: child{Val: math.NaN()}},
 			b:    parent{C: child{Val: math.NaN()}},
 			name: "NaN value in nested struct comparison",
+			opts: cmp.Options{cmpopts.EquateNaNs()},
 		},
 		{
 			a:    unexp{val: math.NaN()},
 			b:    unexp{val: math.NaN()},
 			name: "NaN value as unexported struct member comparison",
-			opts: cmp.Options{cmp.AllowUnexported(unexp{})},
+			opts: cmp.Options{cmp.AllowUnexported(unexp{}), cmpopts.EquateNaNs()},
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			EqualsWithNaN(t, tc.a, tc.b, tc.opts)
+			WithCmpOpts(tc.opts).Equals(t, tc.a, tc.b)
 		})
 	}
 }
