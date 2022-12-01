@@ -92,9 +92,9 @@ func FaultOrPanicToErr(f func()) (err error) {
 	return err
 }
 
-// Contains fails the test if needle is not contained within haystack, if haystack or needle is
+// ContainsStringSlice fails the test if needle is not contained within haystack, if haystack or needle is
 // an empty slice, or if needle is longer than haystack.
-func Contains(tb testing.TB, haystack, needle []string) {
+func ContainsStringSlice(tb testing.TB, haystack, needle []string) {
 	_, file, line, _ := runtime.Caller(1)
 
 	if !contains(haystack, needle) {
