@@ -19,12 +19,11 @@
 //
 // Example 3:
 //
-//	func CloseAll(closers []io.Closer) error {
-//		errs := merrors.New()
-//		for _ , c := range closers {
-//			errs.Add(c.Close())
-//    	}
-//		return errs.Err()
-//	}
-//
+//		func CloseAll(closers []io.Closer) error {
+//			errs := merrors.New()
+//			for _ , c := range closers {
+//				errs.Add(c.Close())
+//	   	}
+//			return errs.Err()
+//		}
 package merrors
