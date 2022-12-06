@@ -14,6 +14,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/efficientgo/core/errors"
 	"github.com/efficientgo/core/testutil/internal"
+	"github.com/google/go-cmp/cmp"
 )
 
 // Assert fails the test if the condition is false.
@@ -65,6 +66,33 @@ func NotOk(tb testing.TB, err error, v ...interface{}) {
 func Equals(tb testing.TB, exp, act interface{}, v ...interface{}) {
 	tb.Helper()
 	if reflect.DeepEqual(exp, act) {
+		return
+	}
+	_, file, line, _ := runtime.Caller(1)
+
+	var msg string
+	if len(v) > 0 {
+		msg = fmt.Sprintf(v[0].(string), v[1:]...)
+	}
+	tb.Fatal(sprintfWithLimit("\033[31m%s:%d:"+msg+"\n\n\texp: %#v\n\n\tgot: %#v%s\033[39m\n\n", filepath.Base(file), line, exp, act, diff(exp, act)))
+}
+
+type goCmp struct {
+	opts cmp.Options
+}
+
+// WithGoCmp allows specifying options and using https://github.com/google/go-cmp
+// for equality comparisons. The compatibility guarantee of this function's arguments
+// are the same as go-cmp i.e none due to v0.x.
+func WithGoCmp(opts ...cmp.Option) goCmp {
+	return goCmp{opts: opts}
+}
+
+// Equals uses go-cmp for comparing equality between two structs, and can be used with
+// various options defined in go-cmp/cmp and go-cmp/cmp/cmpopts.
+func (o goCmp) Equals(tb testing.TB, exp, act interface{}, v ...interface{}) {
+	tb.Helper()
+	if cmp.Equal(exp, act, o.opts) {
 		return
 	}
 	_, file, line, _ := runtime.Caller(1)
