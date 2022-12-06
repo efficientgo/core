@@ -81,6 +81,9 @@ type goCmp struct {
 	opts cmp.Options
 }
 
+// WithGoCmp allows specifying options and using https://github.com/google/go-cmp
+// for equality comparisons. The compatibility guarantee of this function's arguments
+// are the same as go-cmp i.e none due to v0.x.
 func WithGoCmp(opts ...cmp.Option) goCmp {
 	return goCmp{opts: opts}
 }
