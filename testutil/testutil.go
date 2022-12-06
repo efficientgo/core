@@ -81,7 +81,7 @@ type goCmp struct {
 	opts cmp.Options
 }
 
-func WithCmpOpts(opts ...cmp.Option) goCmp {
+func WithGoCmp(opts ...cmp.Option) goCmp {
 	return goCmp{opts: opts}
 }
 

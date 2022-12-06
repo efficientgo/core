@@ -120,7 +120,7 @@ func TestEqualsWithNaN(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			WithCmpOpts(tc.opts).Equals(t, tc.a, tc.b)
+			WithGoCmp(tc.opts).Equals(t, tc.a, tc.b)
 		})
 	}
 }
