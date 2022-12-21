@@ -8,6 +8,7 @@ import (
 	stderrors "errors"
 	"fmt"
 	"io"
+	"sync"
 )
 
 // NilOrMultiError type allows combining multiple errors into one.
@@ -38,11 +39,42 @@ func (e *NilOrMultiError) Add(errs ...error) {
 }
 
 // Err returns the error list as an Error (also implements error) or nil if it is empty.
-func (e NilOrMultiError) Err() Error {
-	if len(e.errs) == 0 {
+func (e *NilOrMultiError) Err() Error {
+	if e == nil || len(e.errs) == 0 {
 		return nil
 	}
-	return multiError(e)
+
+	return multiError(*e)
+}
+
+// NilOrMultiSyncError is a thread-safe implementation of NilOrMultiError.
+// It allows combining multiple errors into one.
+type NilOrMultiSyncError struct {
+	mtx      sync.Mutex
+	multiErr NilOrMultiError
+}
+
+// NewSync returns NilOrMultiSyncError with provided errors added if not nil.
+func NewSync(errs ...error) *NilOrMultiSyncError {
+	sm := &NilOrMultiSyncError{}
+	sm.Add(errs...)
+	return sm
+}
+
+// Add adds single or many errors to the error list. It has same behavior as NilOrMultiError.
+func (e *NilOrMultiSyncError) Add(errs ...error) {
+	e.mtx.Lock()
+	defer e.mtx.Unlock()
+
+	e.multiErr.Add(errs...)
+}
+
+// Err returns the error list as an Error (also implements error) or nil if it is empty.
+func (e *NilOrMultiSyncError) Err() Error {
+	e.mtx.Lock()
+	defer e.mtx.Unlock()
+
+	return e.multiErr.Err()
 }
 
 // Error is extended error interface that allows to use returned read-only multi error in more advanced ways.

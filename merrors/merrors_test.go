@@ -63,6 +63,26 @@ func TestMultiError(t *testing.T) {
 	}())
 }
 
+func TestMultiSyncError(t *testing.T) {
+	err := errors.New("test1")
+
+	// Run tests with race detector to detect data races in NilOrMultiSyncError.
+	e := merrors.NewSync(err)
+	for i := 0; i < 10; i++ {
+		go func() {
+			e.Add(err)
+		}()
+	}
+
+	testutil.NotOk(t, func() error {
+		return e.Err()
+	}())
+
+	testutil.Ok(t, func() error {
+		return merrors.NewSync(nil, nil, nil).Err()
+	}())
+}
+
 func TestMultiError_Error(t *testing.T) {
 	err := errors.New("test1")
 
