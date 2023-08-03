@@ -6,7 +6,7 @@ Go module with set of core packages **every** Go project needs. Minimal API, bat
 
 Maintained by experienced Go developers, including author of the [Efficient Go book](https://www.oreilly.com/library/view/efficient-go/9781098105709/).
 
-Import it using `go get "github.com/efficientgo/core@latest`.
+Import it using `go get github.com/efficientgo/core@latest`.
 
 This module contains packages around the following functionalities:
 
