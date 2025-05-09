@@ -54,7 +54,7 @@ func Ok(tb testing.TB, err error, v ...interface{}) {
 	if len(v) > 0 {
 		msg = fmt.Sprintf(v[0].(string), v[1:]...)
 	}
-	tb.Fatalf("\033[31m%s:%d: \"%s\"\n\n unexpected error: %s\033[39m\n\n", filepath.Base(file), line, withLimitf(msg), withLimitf(err.Error()))
+	tb.Fatalf("\033[31m%s:%d: \"%s\"\n\n unexpected error: %s\033[39m\n\n", filepath.Base(file), line, withLimitf(msg), err.Error())
 }
 
 // NotOk fails the test if an err is nil.
